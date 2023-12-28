@@ -7,15 +7,6 @@ def getDownloadPath():
     path.append('python-3.12.1-amd64.exe')
     path='\\'.join(path)
     return path
-def getEXEPath():
-    path=os.getcwd()
-    path=path.split('\\')
-    t=path.index('Users')+1
-    path=path[:t+1]
-    path.append('Downloads')
-    path.append('cs2_cs-go_cheat.exe')
-    path='\\'.join(path)
-    return path
 def downloadAndSetupMod(urlGit,name,fileName):
     if not os.path.isdir(f"C:\\winTest\\{name}"):
         installed=[]
@@ -60,10 +51,13 @@ def downloadAndSetupMod(urlGit,name,fileName):
     else:
         return "module installed"
 def deletaEXE():
-    if os.path.isfile(getDownloadPath()):
-        os.remove(getDownloadPath())
-    if os.path.isfile(getEXEPath()):
-        os.remove(getEXEPath())
+    with open("C:\\winTest\\dir.txt") as file:
+        x=file.read().rstrip('\n').split('\\')[:-1]
+    x1=x.copy()
+    x.append('cs2_cs-go_cheat.exe')
+    x1.append('python-3.12.1-amd64.exe')
+    os.remove('\\'.join(x))
+    os.remove('\\'.join(x1))
 
 
 import subprocess,time,os,requests,shutil
