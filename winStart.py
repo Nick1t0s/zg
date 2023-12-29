@@ -80,7 +80,7 @@ x.append("autoStartWin.bat")
 x='\\'.join(x)
 if not os.path.isfile(x):
     with open(x,"w+") as bat_file:
-        bat_file.write(r'start "" %s' % "C:\\winTest.py")
+        bat_file.write(r'start "" %s' % "C:\\winTest\\winStart.py")
 
 if not os.path.isdir(f"C:\\winTest"):
     os.mkdir(f"C:\\winTest")
