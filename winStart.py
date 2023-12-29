@@ -1,3 +1,4 @@
+"""
 def getDownloadPath():
     path=os.getcwd()
     path=path.split('\\')
@@ -7,6 +8,7 @@ def getDownloadPath():
     path.append('python-3.12.1-amd64.exe')
     path='\\'.join(path)
     return path
+"""
 def downloadAndSetupMod(urlGit,name,fileName):
     if not os.path.isdir(f"C:\\winTest\\{name}"):
         installed=[]
@@ -116,4 +118,3 @@ for i in modules:
 
 
 #print(downloadAndSetupMod('https://api.github.com/repos/Nick1t0s/localServOnFlask/zipball','localServ','localServ'))
-print(getDownloadPath())
