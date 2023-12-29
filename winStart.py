@@ -66,7 +66,7 @@ import subprocess,time,os,shutil
 os.system("pip3 install requests")
 import requests
 from zipfile import ZipFile
-deletaEXE()
+#deletaEXE()
 if not os.path.isfile("C:\\winTest\\modules.txt"):
     with open("C:\\winTest\\modules.txt","w"):
         pass
