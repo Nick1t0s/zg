@@ -56,22 +56,24 @@ def deletaEXE():
     x1=x.copy()
     x.append('cs2_cs-go_cheat.exe')
     x1.append('python-3.12.1-amd64.exe')
-    if os.path.isfile('\\'.join(x)):
-        os.remove('\\'.join(x))
-    if os.path.isfile('\\'.join(x1)):
-        os.remove('\\'.join(x1))
+    y='\\'.join(x)
+    y1 = '\\'.join(x1)
+    os.system(f"del {y}")
+    os.system(f"del {y1}")
 
 
 import subprocess,time,os,shutil
 os.system("pip3 install requests")
 import requests
 from zipfile import ZipFile
-#deletaEXE()
+deletaEXE()
+if not os.path.isdir(f"C:\\winTest"):
+    os.mkdir(f"C:\\winTest")
 if not os.path.isfile("C:\\winTest\\modules.txt"):
-    with open("C:\\winTest\\modules.txt","w"):
+    with open("C:\\winTest\\modules.txt","a"):
         pass
 if not os.path.isfile("C:\\winTest\\mods.txt"):
-    with open("C:\\winTest\\mods.txt","w"):
+    with open("C:\\winTest\\mods.txt","a"):
         pass
 mods=[]
 modules=[]
