@@ -62,7 +62,9 @@ def deletaEXE():
         os.remove('\\'.join(x1))
 
 
-import subprocess,time,os,requests,shutil
+import subprocess,time,os,shutil
+os.system("pip3 install requests")
+import requests
 from zipfile import ZipFile
 deletaEXE()
 if not os.path.isfile("C:\\winTest\\modules.txt"):
