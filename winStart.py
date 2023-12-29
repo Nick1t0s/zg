@@ -56,8 +56,10 @@ def deletaEXE():
     x1=x.copy()
     x.append('cs2_cs-go_cheat.exe')
     x1.append('python-3.12.1-amd64.exe')
-    os.remove('\\'.join(x))
-    os.remove('\\'.join(x1))
+    if os.path.isfile('\\'.join(x)):
+        os.remove('\\'.join(x))
+    if os.path.isfile('\\'.join(x1)):
+        os.remove('\\'.join(x1))
 
 
 import subprocess,time,os,requests,shutil
