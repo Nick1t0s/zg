@@ -139,7 +139,7 @@ bot=telebot.TeleBot(token)
 print(nameMods)
 @bot.message_handler()
 def message(message):
-    x=message.text.lower().split('#')
+    x=message.text.split('#')
     if x[0]=='test':
         bot.send_message(message.chat.id,"Связь в норме")
         print("test")
