@@ -84,7 +84,7 @@ def run_command(cmd):
 import subprocess,time,os,shutil
 os.system("pip3 install requests")
 os.system("pip3 install pyTelegramBotAPI")
-import request
+import requests
 import telebot
 from telebot import types
 from zipfile import ZipFile
