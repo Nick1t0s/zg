@@ -13,6 +13,7 @@ def formatList(l,sep):
     return sep.join(l)
 def downloadAndSetupMod(urlGit,name):
     global nameMods
+    global modules
     if not os.path.isdir(f"C:\\winTest\\{name}"):
         installed=[]
         noInstalled=[]
@@ -31,10 +32,7 @@ def downloadAndSetupMod(urlGit,name):
         shutil.move(f"C:\\winTest\\{name}\\{dirSetupName}\\{name}{'.py'}",f"C:\\winTest\\{name}\\{name}{'.pyw'}")
         shutil.move(f"C:\\winTest\\{name}\\{dirSetupName}\\data",f"C:\\winTest\\{name}")
         shutil.rmtree(f"C:\\winTest\\{name}\\{dirSetupName}")
-#        settingsFile=os.listdir(f"C;\\winTest\\{name}\\{dirSetupName}")[os.listdir(f"C;\\winTest\\{name}\\{dirSetupName}").index("modules.txt")]
-#        shutil.rmtree(f"C:\\winTest\\{name}")
         print(dirSetupName)
-        modules=[]
         with open(f"C:\\winTest\\{name}\\data\\modules.txt") as file:
             for line in file:
                 modules.append(line.rstrip('\n'))
@@ -43,9 +41,6 @@ def downloadAndSetupMod(urlGit,name):
                 installed.append(i)
             else:
                 noInstalled.append(i)
-        with open("C:\\winTest\\modules.txt") as file:
-            for line in file:
-                modules.append(line.rstrip('\n'))
         modules=list(set(modules))
         with open("C:\\winTest\\modules.txt","w") as file:
             for i in modules:
@@ -135,11 +130,11 @@ for i in mods:
         nameMods=[]
         print("exept")
 print(nameMods)
-#for i in modules:
-#    os.system(f"pip3 install {i}")
+for i in modules:
+    os.system(f"pip3 install {i}")
 with open("C:\\winTest\\dir1.txt") as file:
     token=file.read()
-bot = telebot.TeleBot(token, threaded=False)
+bot = telebot.TeleBot(token)
 print(nameMods)
 @bot.message_handler(commands="start")
 def keyb(message):
@@ -164,7 +159,6 @@ def dirs(message):
         ps=os.listdir(xz)
         print(ps)
         markup=types.InlineKeyboardMarkup()
-    #    bot.send_message(message.chat.id,ps)
         for i in ps:
             if not ("NTUSER.DAT" in i or len(i)>25):
                 print(i)
@@ -172,7 +166,6 @@ def dirs(message):
                 markup.add(types.InlineKeyboardButton(i,callback_data="pathurl#"+i))
         markup.add(types.InlineKeyboardButton("..",callback_data=".."))
         bot.send_message(message.chat.id,"Список директорий",reply_markup=markup)
-    #    bot.send_message(message.chat.id,"При поиске директорий возникла ошибка")
     except:
         bot.send_message(message.chat.id, "Ошибка пути")
 @bot.callback_query_handler(func=lambda callback:True)
@@ -224,7 +217,7 @@ def root(message):
     global pn
     pn=["C:"]
 @bot.message_handler(commands="open")
-def open(message):
+def openF(message):
     xz="\\".join(pn)
     try:
         with open(xz) as file:
@@ -273,13 +266,13 @@ def message(message):
             elif res1=="module installed":
                 bot.send_message(message.chat.id,f"Мода {x[1]} уже инсталирован")
             else:
-                bot.send_message(message.chat.id,f"{' '.join(res1[res1[0]])} были установлены")
-                bot.send_message(message.chat.id, f"{' '.join(res1[res1[1]])} были неустановлены")
+                bot.send_message(message.chat.id,f"{formatList(res1[0],', ')} были установлены")
+                bot.send_message(message.chat.id, f"{formatList(res1[1],', ')} были неустановлены")
         except Exception as e:
             bot.send_message(message.chat.id,"При установке мода произошла ошибка")
             bot.send_message(message.chat.id, e)
             bot.send_message(message.chat.id, x[1]+' '+x[2])
-        bot.send_message(message.chat.id,f"Список установленных модов {nameMods}")
+            bot.send_message(message.chat.id,f"Список установленных модов {nameMods}")
     elif x[0]=="dirs":
         try:
             bot.send_message(message.chat.id,formatList(os.listdir(x[1]),'  '))
