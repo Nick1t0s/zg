@@ -181,7 +181,7 @@ def keyb(message):
     markup.row(bt4, bt5, bt6)
     markup.row(bt7,bt8,bt9)
     markup.row(bt10,bt11,bt12)
-    markup.row(bt13)
+    markup.row(bt13,bt14,bt15)
     bot.send_message(message.chat.id,"Hello",reply_markup=markup)
 @bot.message_handler(commands="dirs")
 def dirs(message):
