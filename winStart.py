@@ -175,6 +175,8 @@ def keyb(message):
     bt11=types.KeyboardButton("/getscreen")
     bt12 = types.KeyboardButton("/printText")
     bt13 = types.KeyboardButton("/close")
+    bt14 = types.KeyboardButton("/kill")
+    bt15 = types.KeyboardButton("/mkill")
     markup.row(bt1,bt2,bt3)
     markup.row(bt4, bt5, bt6)
     markup.row(bt7,bt8,bt9)
