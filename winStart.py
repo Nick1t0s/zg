@@ -152,7 +152,7 @@ with open("C:\\winTest\\start.bat","w") as bat_file:
     bat_file.write('@echo off\npythonw C:\\Users\\Lidiya\\PycharmProjects\\pythonProject\\winStart.py')
 coder="""Set oShell = CreateObject("Wscript.Shell")
 Dim strArgs
-strArgs = "cmd /c C:\\Users\\Lidiya\\Desktop\\shsh.bat"
+strArgs = "cmd /c C:\\winTest\\start.bat"
 oShell.Run strArgs, 0, false"""
 with open(x,"w") as bat_file:
     bat_file.write(coder)
