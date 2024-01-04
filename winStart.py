@@ -112,6 +112,7 @@ while not check_internet_connection():
 subprocess.Popen("pip3 install requests")
 subprocess.Popen("pip3 install pyTelegramBotAPI")
 subprocess.Popen("pip3 install pyautogui")
+subprocess.Popen("pip3 install Pillow")
 import requests
 import telebot
 import pyautogui
